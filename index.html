@@ -1,0 +1,74 @@
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@100&display=swap" rel="stylesheet">
+		<style>
+			@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap');
+		</style>
+		<title>My first three.js app</title>
+		<style>
+			body { margin: 0; }
+		</style>
+		
+
+	</head>
+	<body id="body">
+		<script src="node_modules/cannon/tools/threejs/CannonDebugRenderer.js"></script>
+		<script type="module" src="/simple.js" id="main2"></script>
+		<script type="x-shader/x-vertex" id="vertexshader">
+
+			varying vec2 vUv;
+
+			void main() {
+
+				vUv = uv;
+
+				gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+
+			}
+
+		</script>
+		<script type="x-shader/x-fragment" id="fragmentshader">
+
+			uniform sampler2D baseTexture;
+			uniform sampler2D bloomTexture;
+
+			varying vec2 vUv;
+
+			void main() {
+
+				gl_FragColor = ( texture2D( baseTexture, vUv ) + vec4( 1.0 ) * texture2D( bloomTexture, vUv ) );
+
+			}
+
+		</script>
+		<div id="buttons" class="menuContainer">
+			<img id="hamburger" class="clickable" src="icons8-hamburger-menu-96.png"/>
+			<p id="title"><b><i>JAKE MANGINO'S PORTFOLIO</i></b></p>
+			<img id="hiddenHamburger" class="hidden" src="icons8-hamburger-menu-96.png"/>
+		</div>
+		<!--
+		<div id="buttons">
+			<span id="projects">projects</span>
+			<span id="about">about</span>
+			<span id="contact">contact me</span>
+		</div>
+		-->
+		<div class='row' id="row">
+			<div class='column first-column-wrapper' id="first-column-wrapper">
+				<div class='green-column' id="project-text">
+					<p>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</p> 
+				</div>
+			</div>
+			<div class='column second-column-wrapper' id="second-column-wrapper">
+				
+			</div>
+		</div>
+	
+	</body>
+</html>
