@@ -4,7 +4,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "gh-pages -d dist"
   },
   "devDependencies": {
     "vite": "^2.7.2"
@@ -12,7 +13,6 @@
   "dependencies": {
     "@popmotion/easing": "^1.0.2",
     "cannon": "^0.6.2",
-    "gh-pages": "^4.0.0",
     "popmotion": "^11.0.3",
     "postprocessing": "^6.26.3",
     "simplex-noise": "^3.0.1",
