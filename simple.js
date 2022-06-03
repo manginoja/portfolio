@@ -1,4 +1,3 @@
-import './style.css'
 import * as THREE from './three';
 import CANNON from './cannon';
 import { MapControls }  from './three/examples/jsm/controls/OrbitControls.js';
