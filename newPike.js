@@ -1,5 +1,5 @@
-/*import * as THREE from './three/build/three.module.js';
-import { MapControls }  from './three/examples/jsm/controls/OrbitControls.js';
+import * as THREE from './three/build/three.module.js';
+/*import { MapControls }  from './three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from './three/examples/jsm/loaders/GLTFLoader.js';
 
 import {RenderPass} from './three/examples/jsm/postprocessing/RenderPass.js';
