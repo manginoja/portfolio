@@ -1,6 +1,7 @@
 import * as THREE from './three/build/three.module.js';
 import { MapControls }  from './three/examples/jsm/controls/OrbitControls.js';
 import { GLTFLoader } from './three/examples/jsm/loaders/GLTFLoader.js';
+/*
 import {RenderPass} from './three/examples/jsm/postprocessing/RenderPass.js';
 import {ShaderPass} from './three/examples/jsm/postprocessing/ShaderPass.js';
 import {UnrealBloomPass} from './three/examples/jsm/postprocessing/UnrealBloomPass.js';
@@ -8,6 +9,7 @@ import {OutlinePass} from './three/examples/jsm/postprocessing/OutlinePass.js';
 import {SMAAPass} from './three/examples/jsm/postprocessing/SMAAPass.js';
 import {EffectComposer} from './three/examples/jsm/postprocessing/EffectComposer.js';
 import {DRACOLoader} from './three/examples/jsm/loaders/DRACOLoader.js'; 
+*/
 
 let controlBool = false;
 let useGui = false;
