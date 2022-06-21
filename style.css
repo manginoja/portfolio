@@ -42,7 +42,7 @@ span, img {
 p, ul {
   display: block;
   /*color: #5d676b;*/
-  color: #dddddd;
+  color: #000000;
   overflow: visible;
   font-size: 20px;
   z-index: 99;
