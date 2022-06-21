@@ -5,7 +5,7 @@ import {
 	Texture,
 	UniformsUtils,
 	WebGLRenderTarget
-} from 'three';
+} from '../../../../three/build/three.module.js';
 import { Pass, FullScreenQuad } from './Pass.js';
 import { SMAAEdgesShader } from '../shaders/SMAAShader.js';
 import { SMAAWeightsShader } from '../shaders/SMAAShader.js';
