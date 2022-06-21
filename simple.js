@@ -1,14 +1,21 @@
-import * as THREE from './three';
-import CANNON from './cannon';
+import * as THREE from 'three';
+import * as CANNON from 'cannon';
+/*
 import { MapControls }  from './three/examples/jsm/controls/OrbitControls.js';
-import { GLTFLoader } from './three/examples/jsm/loaders/GLTFLoader.js';
-import { FontLoader } from './three/examples/jsm/loaders/FontLoader.js';
-import { TextGeometry } from './three/examples/jsm/geometries/TextGeometry.js';
-import {sRGBEncoding} from './three';
-import { TWEEN } from './three/examples/jsm/libs/tween.module.min'
+
+
+
 import {GUI} from './three/examples/jsm/libs/lil-gui.module.min.js'
-import {DRACOLoader} from './three/examples/jsm/loaders/DRACOLoader.js'; 
-import Stats from './stats.js'
+
+*/
+import Stats from 'stats.js'
+import {sRGBEncoding} from 'three';
+import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
+import {DRACOLoader} from 'three/examples/jsm/loaders/DRACOLoader.js'; 
+import { TWEEN } from 'three/examples/jsm/libs/tween.module.min';
+
 
 // TODOS:
 // write content for the sections
@@ -20,7 +27,7 @@ let onText = false;
 let useGui = false;
 
 const stats = new Stats()
-document.body.appendChild(stats.dom)
+//document.body.appendChild(stats.dom)
 
 // camera settings
 let near = 1;
@@ -135,7 +142,7 @@ function restoreMaterial( obj ) {
 }
 */
 /******************************** WATER ***********************************/
-
+/*
 const waterGeometry = new THREE.CircleGeometry(3.2, 64);
 
 let water = new Water(waterGeometry, {
@@ -148,7 +155,7 @@ let water = new Water(waterGeometry, {
 } );
 water.position.set(-7, 4.08, 4.2)
 water.rotation.x = - Math.PI / 2;
-
+*/
 /******************************** LIGHTS ***********************************/
 
 

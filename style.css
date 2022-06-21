@@ -39,12 +39,17 @@ span, img {
   z-index: 99;
 }
 
-p {
+p, ul {
   display: block;
-  color: #5d676b;
+  /*color: #5d676b;*/
+  color: #dddddd;
   overflow: visible;
   font-size: 20px;
   z-index: 99;
+}
+
+div {
+  overflow-y: auto;
 }
 
 canvas {
@@ -71,11 +76,21 @@ canvas {
   z-index: 99;
   margin: 40px;
   background-color: #ffffff40;
-  backdrop-filter: blur(5px);
+  backdrop-filter: blur(25px);
   padding: 10px;
-  border-radius: 10px;
+  border-radius: 10px; 
 }
 
+.content {
+  z-index: 99;
+  height: 90%;
+}
+
+.footer {
+  height: 10%;
+  text-align: center;
+  cursor: pointer;
+}
 
 .about.first-column-wrapper {
   width: 70%;
@@ -87,6 +102,22 @@ canvas {
 
 .about.second-column-wrapper {
   width: 30%;
+  display: flex;
+  flex-direction: column;
+  flex-basis: 95%;
+  flex: 1;
+}
+
+.project.first-column-wrapper {
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+  flex-basis: 5%;
+  flex: 1;
+}
+
+.project.second-column-wrapper {
+  width: 30%;
   display: none;
   flex-direction: column;
   flex-basis: 95%;
@@ -94,7 +125,7 @@ canvas {
 }
 
 .green-column.aboutWrapper {
-  height: 80%;
+  height: 90%;
 }
 
 
@@ -326,12 +357,24 @@ img {
 
 hr {
   height: 1px;
-  background-color: #5d676b; 
+  background-color: black; 
   border: none;
 }
 
 .clickable {
   cursor: pointer;
+}
+
+.left {
+  text-align: left;
+}
+
+.right {
+  text-align: right;
+}
+
+.heading {
+  text-align: center;
 }
 
 /*

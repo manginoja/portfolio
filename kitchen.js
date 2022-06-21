@@ -23,14 +23,7 @@ import {GUI} from 'three/examples/jsm/libs/lil-gui.module.min.js'
 import {DRACOLoader} from 'three/examples/jsm/loaders/DRACOLoader.js'; 
 import Stats from 'stats.js'
 
-// TODOS:
-// write content for the sections
-// make a simpler dresser that goes with style
-// bake with objects in scene
-// labels need ~flair~
-
-
-let controlBool = true;
+let controlBool = false;
 let useGui = true;
 
 const stats = new Stats()
@@ -40,14 +33,14 @@ document.body.appendChild(stats.dom)
 // camera settings
 let near = 1;
 let far = 29;
-let cameraPosition = new THREE.Vector3(6.5, 6.3, 6);
+let cameraPosition = new THREE.Vector3(5.9, 4.53, 5.72);
 far = 6000;
 const scene = new THREE.Scene();
 scene.background = new THREE.Color('#02121c');
 
 const camera = new THREE.PerspectiveCamera(40, window.innerWidth / window.innerHeight, near, far );
 camera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z);
-let cameraTarget = new THREE.Vector3(0, 0, 0);
+let cameraTarget = new THREE.Vector3(0, 1, 0);
 camera.lookAt(cameraTarget);
 
 const renderer = new THREE.WebGLRenderer({powerPreference: 'high-performance', antialias:true});
@@ -55,6 +48,7 @@ renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.outputEncoding = sRGBEncoding;
 renderer.sortObjects = false;
+renderer.localClippingEnabled = true;
 document.body.appendChild( renderer.domElement );
 
 renderer.shadowMap.enabled = true;
@@ -82,6 +76,7 @@ function onWindowResize() {
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
     renderer.render( scene, camera );
 }
+
 
 
 /******************************** BLOOM ***********************************/
@@ -156,19 +151,25 @@ const ambientLight = new THREE.AmbientLight(0xffffff,.2);
 scene.add(ambientLight);
 
 const spotLight = new THREE.SpotLight(0xffffff, 1);
-spotLight.angle = .32;
-spotLight.position.set(-21, 18.5, 25);
-spotLight.shadow.camera.far = 70;
+spotLight.angle = 3;
+spotLight.position.set(1.8, 9.3, -1.6);
+spotLight.shadow.camera.far = 200;
 let lights = [spotLight];
 lights.forEach(light => {
   scene.add(light);
   
   light.decay = 2;
   light.castShadow = true;
+  /*
   light.shadow.camera.left = -12;
   light.shadow.camera.right = 2;
   light.shadow.camera.top = 12;
   light.shadow.camera.bottom = -22;
+*/
+  light.shadow.camera.left = -100;
+  light.shadow.camera.right = 100;
+  light.shadow.camera.top = 100;
+  light.shadow.camera.bottom = -100;
   
   
   light.shadow.bias = -.001
@@ -179,7 +180,7 @@ const cameraHelper = new THREE.CameraHelper(spotLight.shadow.camera)
 scene.add(cameraHelper)
 
 let spotLightTarget = new THREE.Object3D();
-spotLightTarget.position.set(0, 0, 0);
+spotLightTarget.position.set(2.3, 0, 0);
 scene.add(spotLightTarget);
 spotLight.target = spotLightTarget;
 
@@ -194,7 +195,7 @@ dracoLoader.setDecoderPath( 'node_modules/three/examples/js/libs/draco/gltf/' );
 gLoader.setDRACOLoader( dracoLoader );
 
 const textureLoader = new THREE.TextureLoader();
-let bakeOne = textureLoader.load('bakeOne.jpg');
+let bakeOne = textureLoader.load('wallsAndFloor.jpg');
 bakeOne.flipY = false;
 bakeOne.encoding = sRGBEncoding;
 let bakeOneMaterial = new THREE.MeshBasicMaterial({map: bakeOne});
@@ -204,17 +205,47 @@ bakeTwo.flipY = false;
 bakeTwo.encoding = sRGBEncoding;
 let bakeTwoMaterial = new THREE.MeshBasicMaterial({map: bakeTwo});
 
+let bakeThree = textureLoader.load('bakeThree.jpg');
+bakeThree.flipY = false;
+bakeThree.encoding = sRGBEncoding;
+let bakeThreeMaterial = new THREE.MeshBasicMaterial({map: bakeThree});
+
+let curtainMaterial = new THREE.MeshLambertMaterial({
+  color: 0xffc0cb,
+  roughness: .37,
+  metalness: 0,
+  transparent: true,
+  transmission: .39,
+  specularIntensity: 0,
+  thickness: .7
+})
+
+let metalMaterial = new THREE.MeshPhysicalMaterial({
+  color: 0xeeeeee,
+  roughness: .3,
+  metalness: 1,
+})
+
+
+
 gLoader.load('kitchen.glb', function(object) {
   scene.add(object.scene);
   object.scene.traverse(function( child ) {
       if (child.isMesh) {
         console.log(child.name)
-          //child.castShadow = true;
-          //child.receiveShadow = true;
-          if (child.name.includes("bakeOne")) {
+          child.castShadow = true;
+          child.receiveShadow = true;
+          //child.material = new THREE.MeshBasicMaterial({color: child.material.color});
+          if (child.name.includes("sinkBowl")) {
+            child.material = metalMaterial;
+          } else if (child.name.includes("bakeOne")) {
             child.material = bakeOneMaterial;
           } else if (child.name.includes("bakeTwo")) {
             child.material = bakeTwoMaterial;
+          } else if (child.name.includes("bakeThree")) {
+            child.material = bakeThreeMaterial;
+          } else if (child.name.includes("curtain")) {
+            child.material = curtainMaterial;
           }
       }
   })
@@ -227,12 +258,22 @@ function ( error ) {
   console.log(error );
 });
 
-/******************************** DRESSER & EXTRAS ***********************************/
-let testLight;
+/******************************** GLASS PANEL ***********************************/
+let panelGeometry = new THREE.BoxGeometry(1.5, .2, 5);
+let panelMaterial = new THREE.MeshPhysicalMaterial({
+  color: 0xffffff,
+  transparent: true,
+  roughness: .6,
+  transmission: .8,
+  thickness: 0.7
+})
+let panel = new THREE.Mesh(panelGeometry, panelMaterial);
+//scene.add(panel);
 /******************************** GUI ***********************************/
+let testLight = spotLight;
 if (useGui) {
   const gui = new GUI();
-  testLight = spotLight;
+  //testLight = panel;
   const params = {
     'x': testLight.position.x,
     'y': testLight.position.y,
@@ -245,16 +286,14 @@ if (useGui) {
     'rx': testLight.rotation.x,
     'ry': testLight.rotation.y,
     'rz': testLight.rotation.z,
-    /*
-    'scale' : testLight.position.x,
-    'azi' : azi,
-    'angle': angle,
     'point intensity': testLight.intensity,
     'point decay': testLight.decay,
     'point penumbra': testLight.penumbra,
     'point angle': testLight.angle,
-    */
-      
+    /*
+    'thickness': curtainMaterial.thickness,
+    'roughness': curtainMaterial.roughness,
+    'transparency': curtainMaterial.transmission*/
   };
 
   gui.add( params, 'x', -20, 20).onChange( function ( val ) {
@@ -266,6 +305,16 @@ if (useGui) {
   gui.add( params, 'z', -20, 20).onChange( function ( val ) {
     testLight.position.z = val;
   } );
+  /*
+  gui.add( params, 'thickness', 0, 5).onChange( function ( val ) {
+    curtainMaterial.thickness = val;
+  } );
+  gui.add( params, 'roughness', 0, 1).onChange( function ( val ) {
+    curtainMaterial.roughness = val;
+  } );
+  gui.add( params, 'transparency', 0, 1).onChange( function ( val ) {
+    curtainMaterial.transmission = val;
+  } );*/
   /*
   gui.add( params, 'scaleX', 0, 2*Math.PI).onChange( function ( val ) {
     frontWallBody.quaternion.setFromAxisAngle(new CANNON.Vec3(-1, 0, 0), val) 
@@ -286,26 +335,6 @@ if (useGui) {
   gui.add( params, 'rz', 0,2* Math.PI).onChange( function ( val ) {
     testLight.rotation.z = val;
   } );
-  /*
-  gui.add( params, 'scale',0, 1).onChange( function ( val ) {
-    testLight.scale.set(val, val, val);
-  } );
-  gui.add( params, 'azi', 0, 180).onChange( function ( val ) {
-    azi = val;
-    phi = THREE.MathUtils.degToRad( 90 - val );
-    sun.setFromSphericalCoords( 1, phi, theta );  
-    sky.material.uniforms[ 'sunPosition' ].value.copy( sun );
-  water.material.uniforms[ 'sunDirection' ].value.copy( sun ).normalize();
-  scene.environment = pmremGenerator.fromScene( sky ).texture;
-  } );
-  gui.add( params, 'angle', 0, 180).onChange( function ( val ) {
-    angle = val;
-    theta = THREE.MathUtils.degToRad(val);
-    sun.setFromSphericalCoords( 1, phi, theta );  
-    sky.material.uniforms[ 'sunPosition' ].value.copy( sun );
-  water.material.uniforms[ 'sunDirection' ].value.copy( sun ).normalize();
-  scene.environment = pmremGenerator.fromScene( sky ).texture;
-  } );
   gui.add( params, 'point intensity', 0, 5700 ).onChange( function ( val ) {
     testLight.intensity = val;
   } );
@@ -319,8 +348,76 @@ if (useGui) {
   gui.add( params, 'point angle', 0, Math.PI /2 ).onChange( function ( val ) {
     testLight.angle = val;
   } );
-  */
 }
+
+let clips = [
+  new THREE.Plane(new THREE.Vector3(0, 0, 1), 2.3),
+  //new THREE.Plane(new THREE.Vector3(0, 1, 0), -1),
+  new THREE.Plane(new THREE.Vector3(0, 0, -1), 2)
+]
+
+for (let plane of clips) {
+  scene.add(new THREE.PlaneHelper(plane));
+}
+
+const fontLoader = new FontLoader();
+let recipes = [
+  "cookies",
+  "biscuits",
+  "chocolate cake",
+  "fried chicken",
+  "dan dan noodles",
+  "biscuits and gravy",
+  "spaghetti bolognese",
+  "snickerdoodles",
+  "cornbread",
+  "danishes",
+  "tacos"
+];
+
+let recipeNum = 0;
+for (let recipe of recipes) {
+  placeText(recipe, recipeNum / 2)
+  recipeNum++;
+}
+
+let textMeshes = [];
+let textMat = new THREE.MeshLambertMaterial({
+  color: 0xcaeaff,
+  side: THREE.DoubleSide,
+  clippingPlanes: clips,
+ // clipIntersection: true,
+  clipShadows: true
+});
+
+function placeText(recipe, z) {
+  fontLoader.load( 'Nunito_Regular.json', function ( font ) {
+    let textGeo = new TextGeometry(recipe, {
+      font: font,
+      size: .2,
+      height: .01,
+      curveSegments: 12,
+      bevelEnabled: true,
+      bevelThickness: .01,
+      bevelSize: .01,
+      bevelOffset: 0,
+      bevelSegments: 5
+    });
+    let textMesh = new THREE.Mesh(textGeo, textMat);
+    if (z < 5) {
+     scene.add(textMesh);
+    }
+    textMesh.position.set(2.3, 0, z)
+    textMesh.castShadow = true;
+    textMesh.receiveShadow = true;
+    textMesh.rotation.x = -Math.PI/2;
+    textMeshes[z] = [textMesh, z];
+  });
+}
+
+
+
+
 /******************************** UTILS ***********************************/
 
 function moveCamera(x, y, z, targetX, targetY, targetZ, duration) {
@@ -341,7 +438,18 @@ function onMouseMove( event ) {
 if (!controlBool) {
   window.addEventListener('wheel', (event) => {
     if (camera.position.y + 0.01 * event.wheelDelta < 30) {
-      camera.position.y += 0.01 * event.wheelDelta;
+      for (const [num, [text,z]] of Object.entries(textMeshes)) {
+        textMeshes[num][1] += 0.01 * event.wheelDelta;
+        if (z < 5 && z > -2) {
+          text.position.z = textMeshes[num][1];
+        }
+        if (z < -2 || z > 6) {
+          scene.remove(text);
+        } else if (text.parent != scene) {
+          scene.add(text);
+          text.position.z = textMeshes[num][1]
+        }
+      }
     }
   })
 }
@@ -357,7 +465,8 @@ function prerender() {
 
 function animate() {
   requestAnimationFrame( animate );
-  //console.log(camera.position)
+  camera.lookAt(cameraTarget)
+ // console.log(camera.position)
   stats.begin();
   renderer.render(scene, camera);
   TWEEN.update();

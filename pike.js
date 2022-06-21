@@ -6,6 +6,7 @@ import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
 import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js';
 import {RenderPass} from 'three/examples/jsm/postprocessing/RenderPass.js';
+import {GammaCorrectionShader} from 'three/examples/jsm/shaders/GammaCorrectionShader.js'
 import {SMAAPass} from 'three/examples/jsm/postprocessing/SMAAPass.js';
 import {BlendFunction, HueSaturationEffect, EffectPass, Resolution} from 'postprocessing';
 import {ShaderPass} from 'three/examples/jsm/postprocessing/ShaderPass.js';
@@ -35,7 +36,7 @@ let cameraPosition = new THREE.Vector3(30, 10, 15);
 cameraPosition = new THREE.Vector3(2276, 0, 2276);
 
 const scene4 = new THREE.Scene();
-scene4.background = new THREE.Color('#02121c');
+scene4.background = new THREE.Color('#000205');
 
 const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, near, far );
 camera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z);
@@ -45,9 +46,9 @@ camera.lookAt(cameraTarget);
 const renderer = new THREE.WebGLRenderer({powerPreference: 'high-performance'});
 renderer.setSize( window.innerWidth, window.innerHeight );
 renderer.setPixelRatio(window.devicePixelRatio);
-renderer.outputEncoding = sRGBEncoding;
-renderer.sortObjects = false;
-renderer.debug = false;
+renderer.outputEncoding = THREE.LinearEncoding;
+//renderer.sortObjects = false;
+//renderer.debug = false;
 document.body.appendChild( renderer.domElement );
 
 
@@ -61,6 +62,7 @@ function onWindowResize() {
     camera.updateProjectionMatrix();
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.render( scene4, camera );
+    composer.setSize(window.innerWidth * window.devicePixelRatio, window.innerHeight * window.devicePixelRatio);
 }
 
 let numLoaded = 0;
@@ -75,34 +77,20 @@ const myRenderTarget = new THREE.WebGLRenderTarget( window.innerWidth * window.d
 
 const bloomLayer = new THREE.Layers();
 bloomLayer.set( 1 );
-const brightBloomLayer = new THREE.Layers();
-brightBloomLayer.set( 2 );
 
 const renderScene = new RenderPass( scene4, camera );
 
 const bloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 1.5, 0.4, 0.85 );
 bloomPass.threshold = 0;
-bloomPass.strength = 2;
+bloomPass.strength = .5;
 bloomPass.radius = 1;
-
-const brightBloomPass = new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), 1.5, 0.4, 0.85 );
-brightBloomPass.threshold = 0;
-brightBloomPass.strength = .1;
-brightBloomPass.radius = 1;
 
 const bloomComposer = new EffectComposer( renderer );
 bloomComposer.renderToScreen = false;
 bloomComposer.addPass( renderScene );
 bloomComposer.addPass( bloomPass );
 
-const brightBloomComposer = new EffectComposer( renderer );
-brightBloomComposer.renderToScreen = false;
-brightBloomComposer.addPass( renderScene );
-brightBloomComposer.addPass( brightBloomPass );
-
-bloomComposer.setSize(window.innerWidth, window.innerHeight);
-brightBloomComposer.setSize(window.innerWidth, window.innerHeight);
-
+bloomComposer.setSize(window.innerWidth * window.devicePixelRatio, window.innerHeight * window.devicePixelRatio);
 
 const finalPass = new ShaderPass(
   new THREE.ShaderMaterial( {
@@ -122,8 +110,10 @@ finalPass.needsSwap = true;
 const finalComposer = new EffectComposer(renderer, myRenderTarget);
 finalComposer.addPass( renderScene );
 finalComposer.addPass( finalPass );
-finalComposer.setSize(window.innerWidth, window.innerHeight);
+finalComposer.setSize(window.innerWidth * window.devicePixelRatio, window.innerHeight * window.devicePixelRatio);
 finalComposer.setPixelRatio(window.devicePixelRatio);
+const gammaCorrectionPass1 = new ShaderPass( GammaCorrectionShader );
+finalComposer.addPass( gammaCorrectionPass1 );
 
 let materials = {};
 let darkMaterial = new THREE.MeshBasicMaterial({color: 'black'});
@@ -176,7 +166,7 @@ let starGeo = new THREE.BufferGeometry();
 starGeo.setAttribute('position', new THREE.BufferAttribute(starArray, 3));
 let stars = new THREE.Points(starGeo, starMaterial);
 scene4.add(stars);
-stars.layers.enable(1);
+//stars.layers.enable(1);
 
 function updatePointsGeometry(points) {
   for (var i = 0; i < points.geometry.attributes.position.count * 3; i += 3) {
@@ -217,18 +207,8 @@ spotLight.castShadow = true;
 const loader = new FontLoader();
 let textMesh;
 let textMaterial = new THREE.MeshPhongMaterial({color: 0xffffff, transparent: true});
-let infoMaterial = new THREE.MeshPhongMaterial({color: 0x000000, transparent: true});
 let texts = ["loading.", "loading..", "loading...", "click to enter"];
-let informationBlurbs = ["information", "informatio", "informati", "informat", "informa",
-                         "informac", "informa", "informaç", "informa", "inform", "infor", 
-                         "info", "inf", "in", "i", "信", "i", "in", "inf", "info", "infor", 
-                         "inform", "informa", "informat", "informati", "informatio"]
-let informationEndings = ["ión?", "ão?", "息?"]
-let informationGeos = [];
-let informationMeshes = [];
 let textGeos = [];
-let informationText;
-let informationText2;
 
 loader.load( 'node_modules/three/examples/fonts/helvetiker_regular.typeface.json', function ( font ) {
   
@@ -250,57 +230,6 @@ loader.load( 'node_modules/three/examples/fonts/helvetiker_regular.typeface.json
   textMesh = new THREE.Mesh(textGeos[0], textMaterial);
   scene4.add(textMesh);
   textMesh.position.set(1300, 0, -1300);
-
-  let infoGeo = new TextGeometry("informa", {
-    font: font,
-    size: .4,
-    height: .01,
-    curveSegments: 12,
-    bevelEnabled: true,
-    bevelThickness: 0.01,
-    bevelSize: 0,
-    bevelOffset: 0,
-    bevelSegments: 5
-  } );
-
-  informationText = new THREE.Mesh(infoGeo, infoMaterial);
-  scene4.add(informationText);
-  informationText.rotation.y = Math.PI;
-  informationText.position.set(15.6, 1.5, -0.4)
-
-  let infoGeo2 = new TextGeometry("cao", {
-    font: font,
-    size: .4,
-    height: .01,
-    curveSegments: 12,
-    bevelEnabled: true,
-    bevelThickness: 0.01,
-    bevelSize: 0,
-    bevelOffset: 0,
-    bevelSegments: 5
-  } );
-
-  informationText2 = new THREE.Mesh(infoGeo2, infoMaterial);
-  scene4.add(informationText2);
-  informationText2.rotation.y = Math.PI;
-  informationText2.position.set(13.76, 1.5, -0.4)
-  //testLight = informationText2;
-
-
-  informationBlurbs.forEach(text => {
-    let geo = new TextGeometry(text, {
-      font: font,
-      size: .4,
-      height: .01,
-      curveSegments: 12,
-      bevelEnabled: true,
-      bevelThickness: 0.01,
-      bevelSize: 0,
-      bevelOffset: 0,
-      bevelSegments: 5
-    })
-    informationGeos.push(geo);
-  });
 } );
 
 
@@ -336,15 +265,16 @@ let objectNames = ["info", "mainBuilding", "building1test", "building2", "buildi
   "building4BricksRight", "brickFloorFron", "brickFloorBack", "countersFishBoards", "building4Lights", "platform", "edgeBricks",
   "sidewalk1", "sidewalk2", "sidewalk3", "sidewalk4", "sidewalk5", "bookstore", "garage", "mainBuildingCeiling", "insideBricks1",
   "lastStore", "middleStore", "garageBricks", "lamps", "dots", "raling"];
+let infoMesh;
 let pikeMeshes = [];
 gLoader.load('pike (1) (1).glb', function(object) {
   for (let i = 0; i < objectNames.length; i++) {
     let mesh = object.scene.children.find((child) => child.name === objectNames[i]);
     let material = processTexture(objectNames[i] + "saturated.jpg");;
-    if (objectNames[i] == "name") {
+    if (objectNames[i] == "info") {
+      infoMesh = mesh;
+    } else if (objectNames[i] == "name") {
       mesh.layers.enable(1);
-    } else if (objectNames[i] == "building4Lights") {
-      mesh.layers.enable(2);
     }
     if (mesh == null) {
       console.log(objectNames[i])
@@ -642,13 +572,28 @@ function onMouseMove( event ) {
 }
 
 
-/*
-const renderScene = new RenderPass(scene4, camera);
-let outlinePass = new OutlinePass(new THREE.Vector2(window.innerWidth, window.innerHeight), scene4, camera);
-outlinePass.visibleEdgeColor.set( "#000000" );
-const composer = new EffectComposer(renderer, myRenderTarget);
-composer.addPass(renderScene)
-composer.addPass(outlinePass);*/
+const size = renderer.getSize( new THREE.Vector2() );
+const _pixelRatio = renderer.getPixelRatio();
+const _width = size.width;
+const _height = size.height;
+const renderTarget = new THREE.WebGLRenderTarget( _width * _pixelRatio, _height * _pixelRatio, {
+  minFilter: THREE.LinearFilter,
+  magFilter: THREE.LinearFilter,
+  format: THREE.RGBAFormat,
+  encoding: THREE.sRGBEncoding
+});
+renderTarget.texture.name = 'EffectComposer.rt1';
+
+
+const composer = new EffectComposer( renderer, renderTarget );
+//const renderScene = new RenderPass(scene4, camera);
+let outlinePass = new OutlinePass(new THREE.Vector2(window.innerWidth * window.devicePixelRatio, window.innerHeight * window.devicePixelRatio), scene4, camera);
+outlinePass.visibleEdgeColor.set( "#ffffff" );
+composer.addPass(renderScene);
+composer.addPass(outlinePass);
+
+const gammaCorrectionPass = new ShaderPass( GammaCorrectionShader );
+composer.addPass( gammaCorrectionPass );
 
 /******************************** ANIMATE ***********************************/
 let i = 0;
@@ -683,25 +628,30 @@ function animate() {
   if (mixer != null) mixer.update(delta * 2);
   camera.lookAt(cameraTarget);
 
+  if (intersects.length > 0 && intersects[0].object.name.includes("info")) {
+    //console.log(intersects[0].object);
+    outlinePass.selectedObjects = [infoMesh];
+    body.style.cursor = "pointer";
+  } else {
+    body.style.cursor = "default";
+    outlinePass.selectedObjects = [];
+  }
+
   /** bloom */
+  
   layerToCheck = bloomLayer;
   scene4.traverse( darkenNonBloomed );
   scene4.background = new THREE.Color(0, 0, 0);
   bloomComposer.render();
-  scene4.background = new THREE.Color('#02121c');
+  scene4.background = new THREE.Color('#000205');
   scene4.traverse( restoreMaterial );
-  /*layerToCheck = brightBloomLayer;
-  scene4.traverse( darkenNonBloomed );
-  scene4.background = new THREE.Color(0, 0, 0);
-	brightBloomComposer.render();
-  scene4.background = new THREE.Color('#02121c');
-  scene4.traverse( restoreMaterial );*/
   finalComposer.render();
 
-
+ 
   //renderer.render(scene4, camera);
   //console.log(camera.position)
   controls.update();
+  
   TWEEN.update();
 
   
@@ -796,6 +746,8 @@ function animate() {
   }
   //informationText.geometry = informationGeos[infoIndex % informationGeos.length];
   //console.log(bird.position);
+  //composer.render();
+  //renderer.render(scene4, camera);
 };
 
 animate();

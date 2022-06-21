@@ -109,8 +109,9 @@ const myRenderTarget = new THREE.WebGLRenderTarget( window.innerWidth * window.d
 const renderScene = new RenderPass( scene2, camera );
 let outlinePass = new OutlinePass(new THREE.Vector2(window.innerWidth, window.innerHeight), scene2, camera);
 const planeComposer = new EffectComposer(renderer, myRenderTarget);
-planeComposer.addPass(renderScene)
+
 planeComposer.addPass(outlinePass);
+planeComposer.addPass(renderScene);
 
 /******************************** LIGHTS ***********************************/
 
@@ -456,6 +457,7 @@ gui.add( params, 'point angle', 0, Math.PI ).onChange( function ( val ) {
 
 /******************************** WATER ***********************************/
 let puget;
+
 //if (waterMovement) {
     var supportsDepthTextureExtension = !!renderer.extensions.get(
         "WEBGL_depth_texture"
@@ -522,14 +524,14 @@ let puget;
 
     var waterGeometry = new THREE.PlaneBufferGeometry(20000, 10000);
     var waterMaterial = new THREE.ShaderMaterial({
-    defines: {
+      defines: {
         DEPTH_PACKING: supportsDepthTextureExtension === true ? 0 : 1,
         ORTHOGRAPHIC_CAMERA: 0
-    },
-    uniforms: THREE.UniformsUtils.merge([THREE.UniformsLib["fog"], uniforms]),
-    vertexShader: document.getElementById("vertexShader").textContent,
-    fragmentShader: document.getElementById("fragmentShader").textContent,
-    fog: true
+      },
+      uniforms: THREE.UniformsUtils.merge([THREE.UniformsLib["fog"], uniforms]),
+      //vertexShader: document.getElementById("vertexShader").textContent,
+      //fragmentShader: document.getElementById("fragmentShader").textContent,
+      fog: true
     });
 
     waterMaterial.uniforms.cameraNear.value = near / 10;
@@ -551,6 +553,7 @@ let puget;
 //} else {
     /**************** FALLBACK WATER ******************/
     var pugetMaterial = new THREE.MeshPhongMaterial({color: 0x02122c});
+    var waterGeometry = new THREE.PlaneBufferGeometry(20000, 10000);
     puget = new THREE.Mesh(waterGeometry, pugetMaterial);
     puget.rotation.x = -Math.PI * 0.5;
     puget.position.set(-500, -60, 0);
@@ -560,8 +563,8 @@ let puget;
 
 
 // should pause the TWEEN
-document.getElementById("input").addEventListener('focusin', () => {loadOtherPage("main2", "main3.js")});
-document.getElementById("input").addEventListener('focusout', () => {render = true});
+//document.getElementById("input").addEventListener('focusin', () => {loadOtherPage("main2", "main3.js")});
+//document.getElementById("input").addEventListener('focusout', () => {render = true});
 document.getElementById("body").addEventListener('click', clickCheck);
 
 
