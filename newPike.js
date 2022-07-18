@@ -211,12 +211,12 @@ gLoader.load('newPike.glb', function(object) {
             } else if (child.name.includes("bakeSix")) {
               child.material = flowerBakeMaterial;
             }
-            
+            console.log(child.name);
       }
   })
 },
 function ( xhr ) {
-  //console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+  console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
 },
 // called when loading has errors
 function ( error ) {
