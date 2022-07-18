@@ -145,36 +145,43 @@ gLoader.setDRACOLoader( dracoLoader );
 const textureLoader = new THREE.TextureLoader();
 let bakeOne = textureLoader.load('buildingOneBake.jpg');
 bakeOne.flipY = false;
+console.log("bake one")
 //bakeOne.encoding = sRGBEncoding;
 let bakeOneMaterial = new THREE.MeshBasicMaterial({map: bakeOne});
 
 let bakeTwo = textureLoader.load('buildingTwoBake.jpg');
 bakeTwo.flipY = false;
+console.log("bake two")
 //bakeTwo.encoding = sRGBEncoding;
 let bakeTwoMaterial = new THREE.MeshBasicMaterial({map: bakeTwo});
 
 let bakeThree = textureLoader.load('buildingThreeBake.jpg');
 bakeThree.flipY = false;
-//bakeThree.encoding = sRGBEncoding;
+//bakeThree.encoding = sRGBEncoding
+console.log("bake three");
 let bakeThreeMaterial = new THREE.MeshBasicMaterial({map: bakeThree});
 
 let bakeFour = textureLoader.load('mainBuildingBake.jpg');
 bakeFour.flipY = false;
+console.log("bake four")
 //bakeFour.encoding = sRGBEncoding;
 let bakeFourMaterial = new THREE.MeshBasicMaterial({map: bakeFour});
 
 let bakeFive = textureLoader.load('mainBuildingBakeTwo.jpg');
 bakeFive.flipY = false;
+console.log("bake five")
 //bakeFive.encoding = sRGBEncoding;
 let bakeFiveMaterial = new THREE.MeshBasicMaterial({map: bakeFive});
 
 let bricksBake = textureLoader.load('bricksBake.jpg');
 bricksBake.flipY = false;
+console.log("bake six")
 //bricksBake.encoding = sRGBEncoding;
 let brickBakeMaterial = new THREE.MeshBasicMaterial({map:  bricksBake});
 
 let flowerBake = textureLoader.load('4kflowers.jpg');
 flowerBake.flipY = false;
+console.log("bake seven")
 //bricksBake.encoding = sRGBEncoding;
 let flowerBakeMaterial = new THREE.MeshBasicMaterial({map:  flowerBake});
 
