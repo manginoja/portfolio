@@ -143,43 +143,43 @@ dracoLoader.setDecoderPath( './three/examples/js/libs/draco/gltf/' );
 gLoader.setDRACOLoader( dracoLoader );
 
 const textureLoader = new THREE.TextureLoader();
-let bakeOne = textureLoader.load('buildingOneBake.jpg');
+let bakeOne = textureLoader.load('buildingOneBake (1)Compressed.jpg');
 bakeOne.flipY = false;
 renderer.initTexture(bakeOne);
 //bakeOne.encoding = sRGBEncoding;
 let bakeOneMaterial = new THREE.MeshBasicMaterial({map: bakeOne});
 
-let bakeTwo = textureLoader.load('buildingTwoBake.jpg');
+let bakeTwo = textureLoader.load('buildingTwoBake (1)Compressed.jpg');
 bakeTwo.flipY = false;
 renderer.initTexture(bakeTwo);
 //bakeTwo.encoding = sRGBEncoding;
 let bakeTwoMaterial = new THREE.MeshBasicMaterial({map: bakeTwo});
 
-let bakeThree = textureLoader.load('buildingThreeBake.jpg');
+let bakeThree = textureLoader.load('buildingThreeBake (1)Compressed.jpg');
 bakeThree.flipY = false;
 renderer.initTexture(bakeThree);
 //bakeThree.encoding = sRGBEncoding
 let bakeThreeMaterial = new THREE.MeshBasicMaterial({map: bakeThree});
 
-let bakeFour = textureLoader.load('mainBuildingBake.jpg');
+let bakeFour = textureLoader.load('mainBuildingBakeCompressed.jpg');
 bakeFour.flipY = false;
 renderer.initTexture(bakeFour);
 //bakeFour.encoding = sRGBEncoding;
 let bakeFourMaterial = new THREE.MeshBasicMaterial({map: bakeFour});
 
-let bakeFive = textureLoader.load('mainBuildingBakeTwo.jpg');
+let bakeFive = textureLoader.load('mainBuildingBakeTwo (1)Compressed.jpg');
 bakeFive.flipY = false;
 renderer.initTexture(bakeFive);
 //bakeFive.encoding = sRGBEncoding;
 let bakeFiveMaterial = new THREE.MeshBasicMaterial({map: bakeFive});
 
-let bricksBake = textureLoader.load('bricksBake.jpg');
+let bricksBake = textureLoader.load('bricksBake (1)Compressed.jpg');
 bricksBake.flipY = false;
 renderer.initTexture(bricksBake);
 //bricksBake.encoding = sRGBEncoding;
 let brickBakeMaterial = new THREE.MeshBasicMaterial({map:  bricksBake});
 
-let flowerBake = textureLoader.load('4kflowers.jpg');
+let flowerBake = textureLoader.load('4kflowers (1)Compressed.jpg');
 flowerBake.flipY = false;
 renderer.initTexture(flowerBake);
 //bricksBake.encoding = sRGBEncoding;
