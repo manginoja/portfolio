@@ -161,7 +161,7 @@ renderer.initTexture(bakeThree);
 //bakeThree.encoding = sRGBEncoding
 let bakeThreeMaterial = new THREE.MeshBasicMaterial({map: bakeThree});
 
-let bakeFour = textureLoader.load('mainBuildingBakeCompressed.jpg');
+let bakeFour = textureLoader.load('mainBuildingBake.jpg');
 bakeFour.flipY = false;
 renderer.initTexture(bakeFour);
 //bakeFour.encoding = sRGBEncoding;
