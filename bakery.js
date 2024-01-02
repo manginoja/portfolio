@@ -2,11 +2,11 @@ import './style.css'
 import * as THREE from './three/build/three.module.js';
 import { GLTFLoader } from './three/examples/jsm/loaders/GLTFLoader.js';
 import {OutlineEffect} from './three/examples/jsm/effects/OutlineEffect.js'; 
-import { TWEEN } from './three/examples/jsm/libs/tween.module.min'
+import { TWEEN } from './three/examples/jsm/libs/tween.module.min.js'
 import {GUI} from './three/examples/jsm/libs/lil-gui.module.min.js'
 import {DRACOLoader} from './three/examples/jsm/loaders/DRACOLoader.js'; 
 import { MeshToonMaterial } from './three/build/three.module.js';
-import Stats from './three/examples/jsm/libs/stats.module'
+import Stats from './three/examples/jsm/libs/stats.module.js'
 
 let statsOn = false;
 
