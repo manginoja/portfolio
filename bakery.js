@@ -265,7 +265,7 @@ function onWindowResize() {
 /******************************** BAKERY ***********************************/
 var gLoader = new GLTFLoader();
 const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath( 'node_modules/three/examples/js/libs/draco/gltf/' );
+dracoLoader.setDecoderPath( './three/examples/js/libs/draco/gltf/' );
 gLoader.setDRACOLoader( dracoLoader );
 
 let materialMap = {};
