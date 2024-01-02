@@ -1,4 +1,3 @@
-import './style.css'
 import * as THREE from './three/build/three.module.js';
 import { GLTFLoader } from './three/examples/jsm/loaders/GLTFLoader.js';
 import {OutlineEffect} from './three/examples/jsm/effects/OutlineEffect.js'; 
