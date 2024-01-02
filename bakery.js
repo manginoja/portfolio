@@ -1,30 +1,30 @@
 import './style.css'
-import * as THREE from 'three';
-import { MapControls }  from 'three/examples/jsm/controls/OrbitControls.js';
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
-import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js';
-import {RenderPass} from 'three/examples/jsm/postprocessing/RenderPass.js';
-import {ShaderPass} from 'three/examples/jsm/postprocessing/ShaderPass.js';
-import { SMAAPass } from 'three/examples/jsm/postprocessing/SMAAPass.js';
-import { RenderPixelatedPass } from 'three/examples/jsm/postprocessing/RenderPixelatedPass.js';
-import { DotScreenPass } from 'three/examples/jsm/postprocessing/DotScreenPass.js';
-import { GammaCorrectionShader } from 'three/examples/jsm/shaders/GammaCorrectionShader.js'
-import {UnrealBloomPass} from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
-import {OutlinePass} from 'three/examples/jsm/postprocessing/OutlinePass.js';
-import {EffectComposer} from 'three/examples/jsm/postprocessing/EffectComposer.js';
-import {LuminosityShader} from 'three/examples/jsm/shaders/LuminosityShader.js'
-import { SobelOperatorShader } from 'three/examples/jsm/shaders/SobelOperatorShader.js'; 
-import {OutlineEffect} from 'three/examples/jsm/effects/OutlineEffect.js'; 
-import { ACESFilmicToneMapping, CineonToneMapping, LinearToneMapping, ObjectSpaceNormalMap, ReinhardToneMapping, sRGBEncoding} from 'three';
-import { TWEEN } from 'three/examples/jsm/libs/tween.module.min'
-import { MeshBasicMaterial } from 'three';
-import {GUI} from 'three/examples/jsm/libs/lil-gui.module.min.js'
-import {DRACOLoader} from 'three/examples/jsm/loaders/DRACOLoader.js'; 
-import { MeshPhysicalMaterial } from 'three';
-import { Plane } from 'three';
-import { MeshToonMaterial } from 'three';
-import Stats from 'three/examples/jsm/libs/stats.module'
-import { DirectionalLight } from 'three';
+import * as THREE from './three';
+import { MapControls }  from './three/examples/jsm/controls/OrbitControls.js';
+import { GLTFLoader } from './three/examples/jsm/loaders/GLTFLoader.js';
+import { FontLoader } from './three/examples/jsm/loaders/FontLoader.js';
+import {RenderPass} from './three/examples/jsm/postprocessing/RenderPass.js';
+import {ShaderPass} from './three/examples/jsm/postprocessing/ShaderPass.js';
+import { SMAAPass } from './three/examples/jsm/postprocessing/SMAAPass.js';
+import { RenderPixelatedPass } from './three/examples/jsm/postprocessing/RenderPixelatedPass.js';
+import { DotScreenPass } from './three/examples/jsm/postprocessing/DotScreenPass.js';
+import { GammaCorrectionShader } from './three/examples/jsm/shaders/GammaCorrectionShader.js'
+import {UnrealBloomPass} from './three/examples/jsm/postprocessing/UnrealBloomPass.js';
+import {OutlinePass} from './three/examples/jsm/postprocessing/OutlinePass.js';
+import {EffectComposer} from './three/examples/jsm/postprocessing/EffectComposer.js';
+import {LuminosityShader} from './three/examples/jsm/shaders/LuminosityShader.js'
+import { SobelOperatorShader } from './three/examples/jsm/shaders/SobelOperatorShader.js'; 
+import {OutlineEffect} from './three/examples/jsm/effects/OutlineEffect.js'; 
+import { ACESFilmicToneMapping, CineonToneMapping, LinearToneMapping, ObjectSpaceNormalMap, ReinhardToneMapping, sRGBEncoding} from './three';
+import { TWEEN } from './three/examples/jsm/libs/tween.module.min'
+import { MeshBasicMaterial } from './three';
+import {GUI} from './three/examples/jsm/libs/lil-gui.module.min.js'
+import {DRACOLoader} from './three/examples/jsm/loaders/DRACOLoader.js'; 
+import { MeshPhysicalMaterial } from './three';
+import { Plane } from './three';
+import { MeshToonMaterial } from './three';
+import Stats from './three/examples/jsm/libs/stats.module'
+import { DirectionalLight } from './three';
 
 let statsOn = false;
 
