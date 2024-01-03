@@ -1,90 +1,32 @@
-import * as THREE from './three/build/three.module.js';
-import { GLTFLoader } from './three/examples/jsm/loaders/GLTFLoader.js';
-//import {OutlineEffect} from './three/examples/jsm/effects/OutlineEffect.js'; 
-import { TWEEN } from './three/examples/jsm/libs/tween.module.min.js'
-import {GUI} from './three/examples/jsm/libs/lil-gui.module.min.js'
-import {DRACOLoader} from './three/examples/jsm/loaders/DRACOLoader.js'; 
-import { MeshToonMaterial } from './three/build/three.module.js';
-import Stats from './three/examples/jsm/libs/stats.module.js'
+import './style.css'
+import * as THREE from 'three';
+import { OrbitControls }  from 'three/examples/jsm/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+import {OutlineEffect} from 'three/examples/jsm/effects/OutlineEffect.js'; 
+import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
+import * as TWEEN from 'three/examples/jsm/libs/tween.module.js'
+import {UnrealBloomPass} from 'three/examples/jsm/postprocessing/UnrealBloomPass.js'
+import {OutputPass} from 'three/examples/jsm/postprocessing/OutputPass.js'
+import {GUI} from 'three/examples/jsm/libs/lil-gui.module.min.js'
+import {DRACOLoader} from 'three/examples/jsm/loaders/DRACOLoader.js'; 
+import { MeshToonMaterial } from 'three';
+import Stats from 'three/examples/jsm/libs/stats.module'
+import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 
-let statsOn = false;
+//TODO:
+// add a night mode button
+// fill in inside
+// branches inside trees
+// brighten lamps at night--they could flicker on?
+// menu on table that moves up to eye level for projects?
+// mailbox for contact me?
 
+/******************************** GLOBAL SETTINGS ***********************************/
 
-
-window.threeStats = function ( renderer ) {
-
-  var _rS = null;
-
-  var _values = {
-      'renderer.info.memory.geometries': {
-          caption: 'Geometries'
-      },
-      'renderer.info.memory.textures': {
-          caption: 'Textures'
-      },
-      'renderer.info.programs': {
-          caption: 'Programs'
-      },
-      'renderer.info.render.calls': {
-          caption: 'Calls'
-      },
-      'renderer.info.render.triangles': {
-          caption: 'Faces',
-          over: 40000
-      },
-      'renderer.info.render.points': {
-          caption: 'Points'
-      },
-      'renderer.info.render.vertices': {
-          caption: 'Vertices'
-      }
-  };
-
-  var _groups = [ {
-      caption: 'Three.js - Memory',
-      values: [ 'renderer.info.memory.geometries', 'renderer.info.programs', 'renderer.info.memory.textures' ]
-  }, {
-      caption: 'Three.js - Render',
-      values: [ 'renderer.info.render.calls', 'renderer.info.render.triangles', 'renderer.info.render.points', 'renderer.info.render.vertices' ]
-  } ];
-
-  var _fractions = [];
-
-  function _update () {
-
-      _rS( 'renderer.info.memory.geometries' ).set( renderer.info.memory.geometries );
-      //_rS( 'renderer.info.programs' ).set( renderer.info.programs.length );
-      _rS( 'renderer.info.memory.textures' ).set( renderer.info.memory.textures );
-      _rS( 'renderer.info.render.calls' ).set( renderer.info.render.calls );
-      _rS( 'renderer.info.render.triangles' ).set( renderer.info.render.triangles );
-      _rS( 'renderer.info.render.points' ).set( renderer.info.render.points );
-      _rS( 'renderer.info.render.vertices' ).set( renderer.info.render.lines );
-
-  }
-
-  function _start () {}
-
-  function _end () {}
-
-  function _attach ( r ) {
-      _rS = r;
-  }
-
-  return {
-      update: _update,
-      start: _start,
-      end: _end,
-      attach: _attach,
-      values: _values,
-      groups: _groups,
-      fractions: _fractions
-  };
-
-};
 
 let parallax = true;
 let cameraPosition = new THREE.Vector3(8, 5, 14);
-let daytime = true;
+let shadow = true;
 
 let aboutCameraTarget = new THREE.Vector3(-3, .58, 4.26);
 let projectCameraTarget = new THREE.Vector3(-.58, 1.06, 2.06)
@@ -95,30 +37,11 @@ let lowerYLimit = 2;
 let upperZLimit = 17;
 let lowerZLimit = 13;
 
-
-
-
-
-//TODO:
-// set up max/min camera locations for parallax
-// add a night mode button
-// fill in inside
-// branches inside trees
-// brighten lamps at night--they could flicker on?
-// clouds?
-// bird needs to line up with crumb animation
-// only do raycaster when needed!
-//fans and power box on the side
-// menu on table that moves up to eye level for projects?
-// bicicyle
-// flower pots along side building
-// mailbox for contact me?
-
-// lighting settings
-let shadow = true;
-
 // render settings
 const sceneFile = 'bakery.glb';
+
+/******************************** SCENE CREATION ***********************************/
+
 
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(.52,.8,.92);
@@ -129,7 +52,6 @@ camera.position.set(cameraPosition.x, cameraPosition.y, cameraPosition.z);
 let cameraTarget = new THREE.Vector3(0, 2, 0);
 camera.lookAt(cameraTarget);
 
-
 let pixelRatio = window.devicePixelRatio
 let AA = true
 if (pixelRatio > 1) {
@@ -138,38 +60,13 @@ if (pixelRatio > 1) {
 
 const renderer = new THREE.WebGLRenderer({antialias: AA, powerPreference: "high-performance"});
 renderer.setSize( window.innerWidth, window.innerHeight );
-renderer.setPixelRatio(window.devicePixelRatio);
+renderer.setPixelRatio(window.devicePixelRatio * 1);
 if (shadow) {
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.BasicShadowMap;
-  //renderer.shadowMap.autoUpdate = false;
 }
-renderer.outputEncoding = THREE.sRGBEncoding;
+renderer.outputColorSpace = THREE.SRGBColorSpace;
 document.body.appendChild( renderer.domElement );
-
-let tS = new threeStats( renderer ); // init after WebGLRenderer is created
-
-if (statsOn) {
-  let rS = new rStats( {
-      values: {
-          frame: { caption: 'Total frame time (ms)', over: 16 },
-          fps: { caption: 'Framerate (FPS)', below: 30 },
-          calls: { caption: 'Calls (three.js)', over: 3000 },
-          raf: { caption: 'Time since last rAF (ms)' },
-          rstats: { caption: 'rStats update (ms)' }
-      },
-      groups: [
-          { caption: 'Framerate', values: [ 'fps', 'raf' ] },
-          { caption: 'Frame Budget', values: [ 'frame', 'texture', 'setup', 'render' ] }
-      ],
-      fractions: [
-          { base: 'frame', steps: [ 'action1', 'render' ] }
-      ],
-      plugins: [
-          tS
-      ]
-  } );
-}
 
 let effect = new OutlineEffect(renderer, {
   defaultThickness: 0.003
@@ -179,10 +76,20 @@ const renderTarget = new THREE.WebGLRenderTarget(
   window.innerWidth * renderer.getPixelRatio(),
   window.innerHeight * renderer.getPixelRatio(),
   {format: THREE.RGBAFormat,
-	encoding: THREE.sRGBEncoding}
+    colorSpace: THREE.SRGBColorSpace}
 )
 
-let controls = new MapControls( camera, renderer.domElement );
+let controls = new OrbitControls( camera, renderer.domElement );
+
+const composer = new EffectComposer(renderer)
+composer.addPass(new RenderPass(scene, camera));
+composer.addPass(new UnrealBloomPass( new THREE.Vector2( window.innerWidth, window.innerHeight ), .15, 0.4, 1 ));
+composer.addPass(new OutputPass())
+
+const stats = new Stats()
+document.body.appendChild(stats.dom)
+
+/******************************** GENERAL LISTENERS ***********************************/
 
 window.addEventListener( 'mousemove', onMouseMove, false );
 const mouse = new THREE.Vector2();
@@ -194,65 +101,6 @@ function onMouseMove( event ) {
     mouse.y = ( event.clientY - window.innerHeight/2 ) / 100;
 }
 
-const raycaster = new THREE.Raycaster();
-
-
-const format = ( renderer.capabilities.isWebGL2 ) ? THREE.RedFormat : THREE.LuminanceFormat;
-
-let stats = new Stats();
-//document.body.appendChild(stats.dom)
-
-/******************************** LIGHTS ***********************************/
-const ambientLight =  new THREE.AmbientLight(0xf2ead0, .471);
-scene.add(ambientLight);
-
-let particleLight = new THREE.Mesh(
-    new THREE.SphereGeometry( .1, 8, 8 ),
-    new THREE.MeshBasicMaterial( { color: 0xffffff, transparent:true, opacity:0} )
-);
-particleLight.position.set(0, 3, 3)
-scene.add( particleLight );
-
-const pointLight = new THREE.PointLight(0xff0000, 1, 10, .5);
-pointLight.position.set(2.5, 0, 10)
-particleLight.add(pointLight)
-pointLight.castShadow = true;
-
-const lanternLeft = new THREE.PointLight(0xceba5a, 0, 7.6, .156);
-lanternLeft.position.set(-1.3, 2.54, 2.8)
-scene.add(lanternLeft)
-//lanternLeft.castShadow = true
-lanternLeft.shadow.normalBias = 1e-2;
-
-const lanternRight = new THREE.PointLight(0xffae00, 0, 4.5, .106);
-lanternRight.position.set(2.62, 2.3, 1.1)
-scene.add(lanternRight)
-//lanternRight.castShadow = true
-lanternRight.shadow.normalBias = 1e-2;
-
-const directionalLight = new THREE.SpotLight(0xff643d, 1)
-directionalLight.color.set(0xf2f2f2);
-scene.add(directionalLight)
-const lightTarget = new THREE.Object3D()
-lightTarget.position.set(0, 0, 0)
-//scene.add(lightTarget)
-directionalLight.target = lightTarget
-//sunset location
-directionalLight.position.set(15.9, 5.5, 12.4)
-//daytime location
-directionalLight.position.set(12.27, 12.62, 20)
-// ? location
-directionalLight.position.set(-9.87, 6.48, 5.24);
-directionalLight.color.set(0xffcccc);
-directionalLight.castShadow = true;
-directionalLight.shadow.mapSize.width = 4096;
-directionalLight.shadow.mapSize.height = 4096;
-
-
-const hemisphereLight = new THREE.HemisphereLight(0xff7777, 0xaaaaff, .9)
-//scene.add(hemisphereLight)
-
-
 window.addEventListener('resize', onWindowResize, false)
 function onWindowResize() {
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -262,10 +110,42 @@ function onWindowResize() {
 }
 
 
+
+/******************************** LIGHTS ***********************************/
+
+
+const ambientLight =  new THREE.AmbientLight(0xf2ead0, .471);
+scene.add(ambientLight);
+
+const lanternLeft = new THREE.PointLight(0xceba5a, 0, 7.6, .75);
+lanternLeft.position.set(-1.3, 2.54, 2.8)
+scene.add(lanternLeft)
+//lanternLeft.castShadow = true
+lanternLeft.shadow.normalBias = 1e-2;
+
+const lanternRight = new THREE.PointLight(0xffae00, 0, 4.5, 1);
+lanternRight.position.set(2.62, 2.3, 1.1)
+scene.add(lanternRight)
+//lanternRight.castShadow = true
+lanternRight.shadow.normalBias = 1e-2;
+
+const directionalLight = new THREE.DirectionalLight(0xff643d, 6)
+directionalLight.color.set(0xf2f2f2);
+scene.add(directionalLight)
+console.log(directionalLight)
+directionalLight.position.set(-9.87, 6.48, 5.24);
+directionalLight.color.set(0xffcccc);
+directionalLight.castShadow = true;
+directionalLight.shadow.mapSize.width = 2048;
+directionalLight.shadow.mapSize.height = 2048;
+
+
+
+
 /******************************** BAKERY ***********************************/
 var gLoader = new GLTFLoader();
 const dracoLoader = new DRACOLoader();
-dracoLoader.setDecoderPath( './three/examples/js/libs/draco/gltf/' );
+dracoLoader.setDecoderPath( 'node_modules/three/examples/jsm/libs/draco/gltf/' );
 gLoader.setDRACOLoader( dracoLoader );
 
 let materialMap = {};
@@ -274,9 +154,6 @@ let mixer;
 let animations = [];
 let newspaperDoor;
 let newspaperDoor1;
-let read;
-let read1;
-let lanternLight;
 let fan;
 
 gLoader.load(sceneFile, function(object) {
@@ -284,6 +161,7 @@ gLoader.load(sceneFile, function(object) {
   animations = object.animations;
   object.scene.traverse(function (child) {
       if (child.isMesh) {
+        // set toon materials -> do not duplicate
         if (!(child.material.color.getHex in materialMap)) {
             const format = ( renderer.capabilities.isWebGL2 ) ? THREE.RedFormat : THREE.LuminanceFormat;
             const colors = new Uint8Array(4);
@@ -306,10 +184,22 @@ gLoader.load(sceneFile, function(object) {
             
         }
         child.material = materialMap[child.material.color.getHex()]
+
+        // set lantern material to standard -> for bloom
+        if (child.name.includes("lanternLight")) {
+          console.log(child)
+          child.material = new THREE.MeshStandardMaterial({
+            toneMapped: false,
+            emissive: "yellow",
+            emissiveIntensity: 1
+          })
+        }
+
+
+
         if (child.name.includes("Text") || child.name.includes("bakery") && !child.name.includes("bakery001") || child.name.includes("treeFront")) {
           child.castShadow = true
         }
-        console.log(child.name)
         child.receiveShadow = true
         if (child.name.includes("window")) {
           child.material.transparent = true;
@@ -321,23 +211,10 @@ gLoader.load(sceneFile, function(object) {
           newspaperDoor = child;
         } else if (child.name.includes("newspaperDoor003_2")) {
           newspaperDoor1 = child;
-        } else if (child.name.includes("Text001_1")) {
-          read = child;
-          child.material.transparent = true;
-          child.material.opacity = 0;
-          child.receiveShadow = false
-        } else if (child.name.includes("Text001")) {
-          read1 = child;
-          child.receiveShadow = false
-          child.material.transparent = true;
-          child.material.opacity = 0;
-        } else if (child.name.includes("lanternLight")) {
-          lanternLight = child;
         } else if (child.name.includes("fan")) {
           fan = child;
           startFan();
         }
-
         if (child.name.includes("Text") || child.name.includes("side")) {
           child.material.userData.outlineParameters = {
             color: [0, 0, 0]
@@ -347,9 +224,9 @@ gLoader.load(sceneFile, function(object) {
       }
   })
   scene.add(object.scene);
-  //startGUI();
+  startGUI();
   peck();
-  child.matrixAutoUpdate = false;
+  object.scene.matrixAutoUpdate = false;
 },
 function ( xhr ) {
   //console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
@@ -400,6 +277,7 @@ let point = lanternLeft
       'z': point.position.z,
       'bias': point.shadow.bias,
       'distance': lanternLeft.distance,
+      'intensity': lanternLeft.intensity,
       'decay': lanternLeft.decay
   };
 
@@ -417,6 +295,9 @@ let point = lanternLeft
   } );
   gui.add( params, 'distance', 0, 50).onChange( function ( val ) {
     lanternLeft.distance = val;
+  } );
+  gui.add( params, 'intensity', 0, 50).onChange( function ( val ) {
+    lanternLeft.intensity = val;
   } );
   gui.add( params, 'decay', 0, 2).onChange( function ( val ) {
     lanternLeft.decay = val;
@@ -436,15 +317,17 @@ function timeChange() {
   new TWEEN.Tween(pointLight).to({intensity: 0}, timeDelay).start()
 
 
-  new TWEEN.Tween(lanternLeft).to({intensity: .8}, timeDelay + 2000).start()
-  new TWEEN.Tween(lanternRight).to({intensity: .8}, timeDelay + 2000).start()
-  new TWEEN.Tween(lanternLight.material.color).to({r: 1, g: 1, b: 1}, timeDelay + 2000).start();
+  new TWEEN.Tween(lanternLeft).to({intensity: 5}, timeDelay + 2000).start()
+  new TWEEN.Tween(lanternRight).to({intensity: 15}, timeDelay + 2000).start()
 }
+
+
+document.body.addEventListener('click', timeChange)
+
+/******************************** TAB TRANSITIONS ***********************************/
 
 document.getElementById("about").addEventListener('click', goToAbout)
 document.getElementById("projects").addEventListener('click', goToProjects)
-//document.body.addEventListener('click', timeChange)
-/******************************** ANIMATE ***********************************/
 
 function goToAbout() {
   //new TWEEN.Tween(cameraTarget).to({x: aboutCameraTarget.x, y: aboutCameraTarget.y, z: aboutCameraTarget.z}, 2500).start()
@@ -463,6 +346,7 @@ function goToProjects() {
 }
 
 
+/******************************** BIRD & CRUMBS ***********************************/
 
 // Update the mixer on each frame
 
@@ -488,8 +372,6 @@ function peck() {
   ani.play();
   crumbsFly(true);
 }
-
-
 
 let crumbs = [];
 function crumbsFly(left) {
@@ -537,15 +419,13 @@ function updateCrumbs() {
   }
 }
 
+/******************************** ANIMATE ***********************************/
 
-
+setTimeout(function() {renderer.shadowMap.autoUpdate = false;}, 2000)
 function animate() {
-  if (statsOn) {
-    rS( 'frame' ).start();
-    rS( 'rAF' ).tick();
-    rS( 'FPS' ).frame();
-  }
- requestAnimationFrame( animate );
+  stats.begin()
+  
+  requestAnimationFrame( animate );
     
     
   
@@ -570,9 +450,6 @@ function animate() {
       puffs.splice(puffs.indexOf(puff), 1)
     }
   });
-
-  stats.begin()
-
   
   // MOUSE PARALLAX
   
@@ -589,13 +466,9 @@ function animate() {
   
   camera.lookAt(cameraTarget);
   effect.render(scene, camera);
+ // composer.render();
   TWEEN.update();
-  //stats.end()
-  if (statsOn) {
-    rS( 'frame' ).end();
-    rS().update();
-  }
-  console.log(camera.position)
+  stats.end()
 };
 
 animate();
